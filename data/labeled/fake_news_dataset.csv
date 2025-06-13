@@ -1,0 +1,11 @@
+data = {
+    "text": [
+        "Global warming is a hoax created by scientists.",
+        "NASA confirms climate change is accelerating.",
+        "Vaccines cause autism according to new study.",
+        "The Earth orbits the Sun.",
+        "Bill Gates controls the WHO through microchips.",
+    ],
+    "label": [1, 0, 1, 0, 1]  # 1 = fake, 0 = real
+}
+df = pd.DataFrame(data)
