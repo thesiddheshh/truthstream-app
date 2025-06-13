@@ -1,0 +1,20 @@
+[
+  {
+    "id": "sim_001",
+    "title": "New Study Shows Climate Change Is Real",
+    "text": "A new study published today shows global temperatures are rising rapidly.",
+    "url": "https://reddit.com/r/science/comments/sim_001", 
+    "subreddit": "science",
+    "timestamp": 1698765432,
+    "source": "reddit"
+  },
+  {
+    "id": "sim_002",
+    "title": "Aliens Spotted Over Nevada Desert",
+    "text": "Eyewitnesses report seeing strange lights and flying objects.",
+    "url": "https://reddit.com/r/conspiracy/comments/sim_002", 
+    "subreddit": "conspiracy",
+    "timestamp": 1698765490,
+    "source": "reddit"
+  }
+]
