@@ -1,0 +1,36 @@
+# Core
+praw
+requests
+python-dotenv
+PyYAML
+
+# Kafka
+kafka-python
+
+# Data Processing
+pandas
+numpy
+scikit-learn
+nltk
+spacy
+beautifulsoup4
+pytest
+
+# ML / NLP
+transformers
+torch
+sentencepiece
+
+# Database
+pymongo
+
+# Dashboard
+streamlit
+wordcloud  # REQUIRED for your WordCloud plots
+
+# Optional (NER / Wikidata)
+wikidata
+spacy[transformers]
+
+# Jupyter
+jupyter
