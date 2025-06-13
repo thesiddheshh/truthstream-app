@@ -228,13 +228,13 @@ pytest tests/
 
 ## 📜 License
 
-MIT License © 2025 Siddheshwar Wagawad
+MIT License © 2025 Your Name or Organization
 
 ---
 
 ## 👤 Contact
 
 For questions or contributions, contact:  
-**siddhwagawad@gmail.com**  
+**your.email@domain.com**  
 LinkedIn | GitHub | Portfolio
 
