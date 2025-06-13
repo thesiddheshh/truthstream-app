@@ -1,160 +1,207 @@
 # TruthStream: Real-Time Fake News Detection Pipeline
 
-TruthStream is a production-ready, real-time fake news detection pipeline that integrates live data ingestion, preprocessing, classification using BERT-based models, verification through Wikidata, and visualization via a Streamlit dashboard. Built for robustness and scalability, the system combines Kafka, MongoDB, and RESTful APIs to deliver accurate, explainable insights into media credibility.
+TruthStream is an end-to-end fake news detection system designed to ingest live data from Reddit and News APIs, process and classify it in real time, and present insights through an interactive Streamlit dashboard. The pipeline integrates Kafka for streaming, MongoDB for storage, Hugging Face's BERT for classification, and optional Wikidata-based verification for added trust evaluation.
+
+---
+
+## 📌 Table of Contents
+
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Key Features](#key-features)
+- [Project Structure](#project-structure)
+- [Setup and Installation](#setup-and-installation)
+- [Usage Guide](#usage-guide)
+- [APIs & Configuration](#apis--configuration)
+- [Model Training](#model-training)
+- [Testing](#testing)
+- [Limitations and Improvements](#limitations-and-improvements)
+- [License](#license)
+- [Contact](#contact)
+
+---
+
+## 🧠 Overview
+
+TruthStream tackles real-time misinformation by combining:
+
+- Real-time ingestion from **Reddit** and **NewsAPI**
+- Stream processing via **Apache Kafka**
+- Fake news classification using a **fine-tuned BERT model**
+- Entity-level verification with **Wikidata**
+- Storage in **MongoDB**
+- A visual interface via **Streamlit**
+
+This system demonstrates how scalable NLP and streaming tools can power misinformation monitoring solutions for journalism, research, and content moderation.
+
+---
+
+## ⚙️ Architecture
+
+```text
+         ┌────────────────────────────────────┐
+         │          Data Sources              │
+         │ ┌────────────┐  ┌────────────────┐ │
+         │ │ Reddit API │  │  NewsAPI.org   │ │
+         │ └─────┬──────┘  └────────┬───────┘ │
+         └───────┼─────────────────┼─────────┘
+                 ↓                 ↓
+         ┌────────────────────────────────────┐
+         │       Ingestion Layer (src/)       │
+         │  reddit_stream.py / newsapi_fetch.py│
+         └────────────────────────────────────┘
+                        ↓
+         ┌────────────────────────────────────┐
+         │     Kafka Streaming Pipeline       │
+         │ kafka_producer.py / kafka_consumer.py │
+         └────────────────────────────────────┘
+                        ↓
+         ┌────────────────────────────────────┐
+         │     Preprocessing & Inference      │
+         │  clean_text.py / predict.py        │
+         └────────────────────────────────────┘
+                        ↓
+         ┌────────────────────────────────────┐
+         │  Verification (Wikidata optional)  │
+         │ verify_with_wikidata.py            │
+         └────────────────────────────────────┘
+                        ↓
+         ┌────────────────────────────────────┐
+         │       Storage (MongoDB)            │
+         │ save_to_mongo.py                   │
+         └────────────────────────────────────┘
+                        ↓
+         ┌────────────────────────────────────┐
+         │      Streamlit Dashboard (UI)      │
+         │         dashboard/app.py           │
+         └────────────────────────────────────┘
+```
+
+---
+
+## 🌟 Key Features
+
+- ✅ Real-time stream ingestion from Reddit & NewsAPI
+- ✅ Kafka-based producer-consumer architecture
+- ✅ BERT-based classification of fake/real news
+- ✅ Optional knowledge verification using Wikidata
+- ✅ MongoDB integration for historical tracking
+- ✅ Intuitive Streamlit dashboard for visualization
+- ✅ Modular, production-ready codebase
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 truthstream/
-│
 ├── data/
-│   ├── raw/                     # Raw JSON from Reddit and NewsAPI
-│   ├── labeled/                 # Cleaned & labeled training data
-│   └── sources.md              # Documentation of data origins
+│   ├── raw/                  # Raw JSON from APIs
+│   ├── labeled/              # Cleaned & labeled data
+│   └── sources.md            # Data provenance notes
 │
 ├── models/
 │   └── bert_fake_news_classifier.pkl
 │
 ├── src/
 │   ├── ingestion/
-│   │   ├── reddit_stream.py       # Live Reddit posts via PRAW
-│   │   ├── newsapi_fetch.py       # Fetch headlines via NewsAPI
-│   │   └── simulate_stream.py     # Local stream simulation
-│   │
+│   │   ├── reddit_stream.py
+│   │   ├── newsapi_fetch.py
+│   │   └── simulate_stream.py
 │   ├── kafka/
-│   │   ├── kafka_producer.py      # Streams data to Kafka topic
-│   │   └── kafka_consumer.py      # Applies NLP pipeline on stream
-│   │
+│   │   ├── kafka_producer.py
+│   │   └── kafka_consumer.py
 │   ├── preprocessing/
-│   │   └── clean_text.py          # Tokenization, stopwords, lemmatization
-│   │
+│   │   └── clean_text.py
 │   ├── model/
-│   │   ├── train_model.py         # Trains and saves BERT classifier
-│   │   └── predict.py             # Loads model and predicts
-│   │
+│   │   ├── train_model.py
+│   │   └── predict.py
 │   ├── verification/
 │   │   ├── verify_with_wikidata.py
-│   │   └── entity_linking.py      # (Optional) Named entity matching
-│   │
+│   │   └── entity_linking.py
 │   ├── storage/
-│   │   ├── save_to_mongo.py       # Inserts verified output to MongoDB
+│   │   ├── save_to_mongo.py
 │   │   └── schema_example.json
-│   │
 │   └── dashboard/
-│       └── app.py                 # Streamlit frontend
+│       └── app.py
 │
 ├── notebooks/
 │   ├── data_exploration.ipynb
 │   └── model_training.ipynb
 │
 ├── config/
-│   └── config.yaml                # API keys, Kafka topics, model paths
-│
+│   └── config.yaml
 ├── tests/
 │   ├── test_cleaning.py
 │   ├── test_model.py
 │   └── test_pipeline.py
-│
 ├── requirements.txt
-├── architecture.png               # Pipeline diagram
 ├── README.md
-└── .env                           # API keys (excluded from git)
+├── architecture.png
+└── .env
 ```
 
 ---
 
-## 🚀 Features
+## 🛠️ Setup and Installation
 
-- Real-time ingestion from Reddit and NewsAPI
-- Modular NLP pipeline: cleaning, classification, verification
-- Kafka streaming with producer-consumer architecture
-- BERT-based fake news classifier with 90%+ test accuracy
-- Optional entity linking with Wikidata for fact-checking
-- Streamlit dashboard for user interaction and analytics
-- MongoDB integration for storing verified results
-- Notebooks for EDA and model experimentation
-- Unit tests for pipeline stability
-
----
-
-## ⚙️ Installation
-
-### 1. Clone Repository
+### 1. Clone the Repo
 
 ```bash
 git clone https://github.com/yourusername/truthstream.git
 cd truthstream
 ```
 
-### 2. Set Up Python Environment
+### 2. Set up the Virtual Environment
 
 ```bash
 python -m venv venv
-source venv/bin/activate      # Linux/Mac
-venv\Scripts\activate         # Windows
+source venv/bin/activate   # Windows: venv\Scripts\activate
+```
 
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment
+### 4. Kafka & MongoDB Setup
 
-Create a `.env` file in the root directory:
+Ensure the following services are running:
 
-```env
-REDDIT_CLIENT_ID=your_id
-REDDIT_SECRET=your_secret
-NEWSAPI_KEY=your_key
-MONGO_URI=mongodb://localhost:27017
-```
-
-Edit `config/config.yaml` to match your local paths and settings.
+- **Kafka**: [Install & Start Guide](https://kafka.apache.org/quickstart)
+- **MongoDB**: `sudo service mongod start` (or use Docker)
 
 ---
 
-## 🧠 Model Training (Optional)
+## 🚀 Usage Guide
 
-Use the provided notebook or script to train:
-
-```bash
-python src/model/train_model.py --data data/labeled/fake_news.csv --model_out models/bert_fake_news_classifier.pkl
-```
-
----
-
-## 🛰️ Running the Pipeline
-
-### 1. Start Kafka and Zookeeper
-
-Make sure Kafka and Zookeeper are running locally.
-
-```bash
-# Start Zookeeper
-bin/zookeeper-server-start.sh config/zookeeper.properties
-
-# Start Kafka
-bin/kafka-server-start.sh config/server.properties
-```
-
-### 2. Run Data Producers
+### 1. Ingest News & Reddit Data
 
 ```bash
 python src/ingestion/reddit_stream.py
 python src/ingestion/newsapi_fetch.py
 ```
 
-### 3. Start Kafka Consumer + Classifier
+Or simulate:
+
+```bash
+python src/ingestion/simulate_stream.py
+```
+
+### 2. Start Kafka Producer
+
+```bash
+python src/kafka/kafka_producer.py
+```
+
+### 3. Start Kafka Consumer
 
 ```bash
 python src/kafka/kafka_consumer.py
 ```
 
-This script applies the NLP pipeline and pushes the output to MongoDB.
-
----
-
-## 📊 Run the Dashboard
+### 4. Run Streamlit Dashboard
 
 ```bash
 streamlit run src/dashboard/app.py
@@ -162,79 +209,92 @@ streamlit run src/dashboard/app.py
 
 ---
 
-## 🧪 Running Tests
+## 🔧 APIs & Configuration
+
+Update your API keys in `config/config.yaml`:
+
+```yaml
+reddit:
+  client_id: YOUR_ID
+  client_secret: YOUR_SECRET
+  user_agent: truthstream-bot
+
+newsapi:
+  api_key: YOUR_NEWSAPI_KEY
+
+mongodb:
+  uri: mongodb://localhost:27017
+  database: truthstream
+```
+
+Don't forget to set sensitive credentials in `.env`.
+
+---
+
+## 🧪 Model Training
+
+To retrain or fine-tune the fake news classifier:
+
+```bash
+python src/model/train_model.py
+```
+
+Training details can be explored in:
+
+```bash
+notebooks/model_training.ipynb
+```
+
+---
+
+## ✅ Testing
 
 ```bash
 pytest tests/
 ```
 
----
+Covers:
 
-## 🧱 Tech Stack
-
-- **Data Ingestion:** PRAW (Reddit), NewsAPI
-- **Streaming:** Apache Kafka
-- **Preprocessing:** NLTK, spaCy
-- **Modeling:** BERT (Hugging Face Transformers)
-- **Verification:** Wikidata SPARQL queries
-- **Database:** MongoDB
-- **Frontend:** Streamlit
-- **Orchestration:** YAML, CLI scripts
-- **Testing:** Pytest
+- Text preprocessing
+- Prediction pipeline
+- Stream flow sanity
 
 ---
 
-## 📌 Pipeline Architecture
+## ⚠️ Limitations and Improvements
 
-![Architecture](architecture.png)
+### Current Limitations
 
-1. Live articles/comments ingested from Reddit & NewsAPI
-2. Data streamed via Kafka topics
-3. Kafka Consumer runs:
-   - Text cleaning
-   - BERT-based fake/real prediction
-   - Optional fact-checking via Wikidata
-4. Final output stored in MongoDB
-5. Streamlit dashboard queries and displays results
+- Wikidata verification is slow for real-time pipelines
+- BERT model may struggle with satirical content
+- No multilingual support
+
+### Future Work
+
+- Integrate SHAP explainability in dashboard
+- Add multi-language detection support
+- Containerize with Docker + Kubernetes
+- Extend to video misinformation using Whisper
 
 ---
 
-## 📂 MongoDB Schema
+## 📄 License
 
-```json
-{
-  "source": "reddit" | "newsapi",
-  "timestamp": "2025-06-13T15:30:00Z",
-  "text": "...",
-  "cleaned_text": "...",
-  "prediction": "FAKE" | "REAL",
-  "confidence": 0.92,
-  "verified_entities": [...],
-  "wikidata_verification": true
-}
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+
+---
+
+## 📬 Contact
+
+**Author**: Siddheshwar Wagawad  
+GitHub: [@thesiddheshh](https://github.com/thesiddheshh)  
+Email: siddhwagawad@gmail.com
+
+Open issues or PRs for improvements or contributions.
+
+---
+
+```bash
+# TruthStream — Real-time NLP pipeline for fake news detection.
+# Apache Kafka | MongoDB | BERT | Streamlit | PRAW | NewsAPI
 ```
-
----
-
-## 📎 Future Enhancements
-
-- Multilingual support (IndicBERT, XLM-R)
-- Source trustworthiness scoring
-- SHAP-based model explainability
-- FastAPI backend integration
-- Live alerts on misinformation trends
-
----
-
-## 📜 License
-
-MIT License © 2025 Your Name or Organization
-
----
-
-## 👤 Contact
-
-For questions or contributions, contact:  
-**your.email@domain.com**  
-LinkedIn | GitHub | Portfolio
-
