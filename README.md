@@ -39,43 +39,37 @@ This system demonstrates how scalable NLP and streaming tools can power misinfor
 ## ⚙️ Architecture
 
 ```text
-         ┌────────────────────────────────────┐
-         │          Data Sources              │
-         │ ┌────────────┐  ┌────────────────┐ │
-         │ │ Reddit API │  │  NewsAPI.org   │ │
-         │ └─────┬──────┘  └────────┬───────┘ │
-         └───────┼─────────────────┼─────────┘
-                 ↓                 ↓
-         ┌────────────────────────────────────┐
-         │       Ingestion Layer (src/)       │
-         │  reddit_stream.py / newsapi_fetch.py│
-         └────────────────────────────────────┘
-                        ↓
-         ┌────────────────────────────────────┐
-         │     Kafka Streaming Pipeline       │
-         │ kafka_producer.py / kafka_consumer.py │
-         └────────────────────────────────────┘
-                        ↓
-         ┌────────────────────────────────────┐
-         │     Preprocessing & Inference      │
-         │  clean_text.py / predict.py        │
-         └────────────────────────────────────┘
-                        ↓
-         ┌────────────────────────────────────┐
-         │  Verification (Wikidata optional)  │
-         │ verify_with_wikidata.py            │
-         └────────────────────────────────────┘
-                        ↓
-         ┌────────────────────────────────────┐
-         │       Storage (MongoDB)            │
-         │ save_to_mongo.py                   │
-         └────────────────────────────────────┘
-                        ↓
-         ┌────────────────────────────────────┐
-         │      Streamlit Dashboard (UI)      │
-         │         dashboard/app.py           │
-         └────────────────────────────────────┘
-```
+      
+
+    +----------------+        +-----------------+        +--------------------+
+    | Reddit Stream  |        | NewsAPI Fetch   |        | Simulated Stream   |
+    +-------+--------+        +--------+--------+        +---------+----------+
+            |                         |                           |
+            +----------+--------------+--------------+------------+
+                       |                             |
+               +-------v-----------------------------v--------+
+               |            Kafka Producer (src/kafka)         |
+               +----------------------+------------------------+
+                                      |
+                                      v
+                      +---------------+----------------+
+                      | Kafka Consumer (src/kafka)     |
+                      | - Preprocessing (clean_text.py)|
+                      | - Prediction (model/predict.py)|
+                      | - Verification (wikidata)      |
+                      | - Storage (MongoDB)             |
+                      +---------------+----------------+
+                                      |
+                                      v
+                            +---------+----------+
+                            | MongoDB Storage     |
+                            +---------+----------+
+                                      |
+                                      v
+                            +---------+----------+
+                            | Streamlit Dashboard |
+                            +---------------------+
+
 
 ---
 
