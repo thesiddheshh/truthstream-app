@@ -13,11 +13,6 @@ bin-release/
 *.ipa
 *.apk
 
-echo ".env" >> .gitignore
-git rm --cached .env
-git commit -m "Remove .env from version control"
-
-
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
